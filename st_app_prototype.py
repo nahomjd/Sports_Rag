@@ -16,6 +16,8 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 
 from summary_AI import html_extraction, ask_intelligent_assistant, summarize_html_with_langchain_map_reduce
+from engineer_AI import run_visualization
+
 
 raw_html_content, extracted_text_content = html_extraction()
 
@@ -25,6 +27,12 @@ st.title('Your sports data assistant')
 prompt = st.chat_input('How can I help you today')
 if prompt:
     st.write(ask_intelligent_assistant(prompt, extracted_text_content, raw_html_content))
+    fig, error = run_visualization(prompt,raw_html_content)
+    if error:
+        st.write(error)
+    print(fig)
+    st.pyplot(fig[0])
+    
 
 #Chat History
 if 'messages' not in st.session_state:
@@ -33,7 +41,7 @@ if 'messages' not in st.session_state:
 #Display chat messages from history on app run
 for message in st.session_state.messages:
     with st.chat_message(message['role']):
-            st.markdown(message['content'])
+        st.markdown(message['content'])
             
 
 uploaded_files = st.sidebar.file_uploader(
