@@ -16,7 +16,7 @@ import matplotlib
 #API/LLM/environment definitions
 os.environ['LANGCHAIN_TRACING_V2'] = 'true'
 os.environ['LANGCHAIN_ENDPOINT'] = 'https://api.smith.langchain.com'
-os.environ['LANGCHAIN_API_KEY'] = os.environ.get('LANGCHAIN_API_KEY')
+#os.environ['LANGCHAIN_API_KEY'] = os.environ.get('LANGCHAIN_API_KEY')
 
 os.environ["GOOGLE_API_KEY"] = os.environ.get('GOOGLE_GEMNI_API_KEY')
 
