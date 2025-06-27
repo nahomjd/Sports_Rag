@@ -15,9 +15,9 @@ import matplotlib
 #API/LLM/environment definitions
 LANGCHAIN_TRACING_V2 = 'true'
 LANGCHAIN_ENDPOINT = 'https://api.smith.langchain.com'
-LANGCHAIN_API_KEY = os.environ.get('LANGCHAIN_API_KEY')
+LANGCHAIN_API_KEY = st.secrets["LANGCHAIN_API_KEY"]
 
-GOOGLE_API_KEY = os.environ.get('GOOGLE_GEMNI_API_KEY')
+GOOGLE_API_KEY = st.secrets["GOOGLE_GEMNI_API_KEY"]
 
 #Testing Source file
 HTML_FILE_PATH = 'Source_Material/Example_game.html'
