@@ -8,6 +8,7 @@ from langchain_community.document_loaders import BSHTMLLoader # <--- HTML LOADER
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
+import streamlit as st
 
 #API/LLM/environment definitions
 LANGCHAIN_TRACING_V2 = 'true'
