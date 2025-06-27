@@ -1,3 +1,4 @@
 langchain
 langsmith
 matplotlib
+langchain_google_genai
