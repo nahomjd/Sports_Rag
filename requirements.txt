@@ -1,1 +1,8 @@
-
+os
+re
+langchain
+langsmith
+matplotlib
+json
+streamlit
+requests
