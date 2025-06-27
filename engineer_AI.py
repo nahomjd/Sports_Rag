@@ -16,7 +16,7 @@ import streamlit as st
 #API/LLM/environment definitions
 LANGCHAIN_TRACING_V2 = 'true'
 LANGCHAIN_ENDPOINT = 'https://api.smith.langchain.com'
-LANGCHAIN_API_KEY = st.secrets["LANGCHAIN_API_KEY"]
+#LANGCHAIN_API_KEY = st.secrets["LANGCHAIN_API_KEY"]
 
 GOOGLE_API_KEY = st.secrets["GOOGLE_GEMNI_API_KEY"]
 
@@ -33,6 +33,7 @@ LLM = ChatGoogleGenerativeAI(
     max_tokens=None,
     timeout=None,
     max_retries=2,
+    google_api_key = GOOGLE_API_KEY,
     # other params...
 )
 
@@ -42,6 +43,7 @@ code_LLM = ChatGoogleGenerativeAI(
     max_tokens=None,
     timeout=None,
     max_retries=2,
+    google_api_key = GOOGLE_API_KEY
     # other params...
 )
 
