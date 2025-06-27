@@ -4,3 +4,4 @@ matplotlib
 langchain_google_genai
 langchain_community
 langchain_core
+beautifulsoup4
