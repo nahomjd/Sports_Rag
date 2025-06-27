@@ -11,6 +11,7 @@ from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 import re
 import matplotlib.pyplot as plt
 import matplotlib
+import streamlit as st
 
 #API/LLM/environment definitions
 LANGCHAIN_TRACING_V2 = 'true'
