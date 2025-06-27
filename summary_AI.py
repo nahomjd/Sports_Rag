@@ -1,4 +1,3 @@
-import os
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_community.document_loaders import BSHTMLLoader # BeautifulSoup HTML Loader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -11,11 +10,11 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 
 #API/LLM/environment definitions
-os.environ['LANGCHAIN_TRACING_V2'] = 'true'
-os.environ['LANGCHAIN_ENDPOINT'] = 'https://api.smith.langchain.com'
-os.environ['LANGCHAIN_API_KEY'] = os.environ.get('LANGCHAIN_API_KEY')
+LANGCHAIN_TRACING_V2 = 'true'
+LANGCHAIN_ENDPOINT = 'https://api.smith.langchain.com'
+LANGCHAIN_API_KEY = os.environ.get('LANGCHAIN_API_KEY')
 
-os.environ["GOOGLE_API_KEY"] = os.environ.get('GOOGLE_GEMNI_API_KEY')
+GOOGLE_API_KEY = os.environ.get('GOOGLE_GEMNI_API_KEY')
 
 #Testing Source file
 HTML_FILE_PATH = 'Source_Material/Example_game.html'
