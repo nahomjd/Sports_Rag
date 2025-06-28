@@ -15,7 +15,7 @@ import streamlit as st
 #API/LLM/environment definitions
 LANGCHAIN_TRACING_V2 = 'true'
 LANGCHAIN_ENDPOINT = 'https://api.smith.langchain.com'
-#os.environ['LANGCHAIN_API_KEY'] = os.environ.get('LANGCHAIN_API_KEY')
+#LANGCHAIN_API_KEY = st.secrets["LANGCHAIN_API_KEY"]
 
 GOOGLE_API_KEY = st.secrets["GOOGLE_GEMNI_API_KEY"]
 
