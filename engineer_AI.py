@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 import matplotlib
 import streamlit as st
 
+import streamlit as st
+
 #API/LLM/environment definitions
 LANGCHAIN_TRACING_V2 = 'true'
 LANGCHAIN_ENDPOINT = 'https://api.smith.langchain.com'
@@ -43,7 +45,7 @@ code_LLM = ChatGoogleGenerativeAI(
     max_tokens=None,
     timeout=None,
     max_retries=2,
-    google_api_key = GOOGLE_API_KEY
+    google_api_key = GOOGLE_API_KEY,
     # other params...
 )
 
