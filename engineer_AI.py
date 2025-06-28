@@ -13,9 +13,11 @@ import re
 import matplotlib.pyplot as plt
 import matplotlib
 
+import streamlit as st
+
 #API/LLM/environment definitions
-os.environ['LANGCHAIN_TRACING_V2'] = 'true'
-os.environ['LANGCHAIN_ENDPOINT'] = 'https://api.smith.langchain.com'
+LANGCHAIN_TRACING_V2 = 'true'
+LANGCHAIN_ENDPOINT = 'https://api.smith.langchain.com'
 #os.environ['LANGCHAIN_API_KEY'] = os.environ.get('LANGCHAIN_API_KEY')
 
 GOOGLE_API_KEY = st.secrets["GOOGLE_GEMNI_API_KEY"]

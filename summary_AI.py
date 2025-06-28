@@ -10,9 +10,11 @@ from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 
+import streamlit as st
+
 #API/LLM/environment definitions
-os.environ['LANGCHAIN_TRACING_V2'] = 'true'
-os.environ['LANGCHAIN_ENDPOINT'] = 'https://api.smith.langchain.com'
+LANGCHAIN_TRACING_V2 = 'true'
+LANGCHAIN_ENDPOINT = 'https://api.smith.langchain.com'
 #os.environ['LANGCHAIN_API_KEY'] = os.environ.get('LANGCHAIN_API_KEY')
 
 GOOGLE_API_KEY = st.secrets["GOOGLE_GEMNI_API_KEY"]
@@ -127,7 +129,11 @@ def router(LLM, Querytype = QueryType()):
     return router_chain
 
 def content_qa_prompt_template(LLM, extracted_text_content, raw_html_content):
-    content_qa_prompt_template = """You are a helpful AI Sports Data assistant. Answer the user's question based *only* on the provided Document Text.
+    content_qa_prompt_template = """You are a business analyst turn into a sports analyst, an expert at gaining insight from sports information. You will do three things before responding
+    1. Take in the question and determine what type of insights would be benificial ontop of answering the question.
+    2. Come up with the best format using markdown or not to give the response.
+    3. Ensure that the data needed for answering the question is in the file.
+    
     Utilize the information in the document to answer questions. Make inferences based on the available data. When possible, use stats/data backed by the document.
     Your job has one part:
     1) Answer the user's question based *only* on the provided Document Text
@@ -153,8 +159,11 @@ def content_qa_prompt_template(LLM, extracted_text_content, raw_html_content):
     return content_qa_chain
  
 def content_qa_prompt_html_template(LLM, extracted_text_content, raw_html_content):
-    content_qa_prompt_html_template = """You are a helpful AI Sports Data assistant. Answer the user's question based *only* on the provided Document Text.
-    Utilize the information in the document to answer questions. Make inferences based on the available data. When possible, use stats/data backed by the document.
+    content_qa_prompt_html_template = """You are a business analyst turn into a sports analyst, an expert at gaining insight from sports information. You will do three things before responding
+    1. Take in the question and determine what type of insights would be benificial ontop of answering the question.
+    2. Come up with the best format using markdown or not to give the response.
+    3. Ensure that the data needed for answering the question is in the file.
+    
     Your job has one part:
     1) Answer the user's question based *only* on the provided Document Text
 
@@ -178,31 +187,6 @@ def content_qa_prompt_html_template(LLM, extracted_text_content, raw_html_conten
     )
     return content_qa_html_chain
     
-def content_qa_prompt_html_template(LLM, extracted_text_content, raw_html_content):
-    content_qa_prompt_html_template = """You are a helpful AI Sports Data assistant. Answer the user's question based *only* on the provided Document Text.
-    Utilize the information in the document to answer questions. Make inferences based on the available data. When possible, use stats/data backed by the document.
-    Your job has one part:
-    1) Answer the user's question based *only* on the provided Document Text
-
-    Raw HTML Source Code (FOR YOUR REFERENCE ONLY, DO NOT INCLUDE IN ANSWER):
-    ---
-    {raw_html_source}
-    ---
-
-    User Question: {question}
-
-    Content Answer:"""
-    content_qa_html_prompt = PromptTemplate.from_template(content_qa_prompt_html_template)
-    content_qa_html_chain = (
-        {
-            "raw_html_source": RunnableLambda(lambda x: raw_html_content),
-            "question": RunnablePassthrough() # Pass the original question
-        }
-        | content_qa_html_prompt
-        | LLM
-        | StrOutputParser()
-    )
-    return content_qa_html_chain
     
 def file_structure_template(LLM, extracted_text_content, raw_html_content):
     file_structure_template = """You are a helpful AI Sports Data assistant. Use the context of the question and, if possible, the provided file to determine the sport the question is asking.
@@ -236,8 +220,15 @@ def file_structure_template(LLM, extracted_text_content, raw_html_content):
     return file_structure_chain
     
 def code_generation_template(LLM, extracted_text_content, raw_html_content):
-    code_generation_template = """You are a helpful AI Sports Data assistant. Although the question asks to write code, answer the underlying question to the best of your ability without writing code.
+    code_generation_template = """Although the question asks to write code, answer the underlying question to the best of your ability without writing code.
+    
+    You are a business analyst turn into a sports analyst, an expert at gaining insight from sports information. You will do three things before responding
+    1. Take in the question and determine what type of insights would be benificial ontop of answering the question.
+    2. Come up with the best format using markdown or not to give the response.
+    3. Ensure that the data needed for answering the question is in the file.
+
     Use the context of the question. Answer the user's question based *only* on the provided Document Text.
+    
     Utilize the information in the document to answer questions. Make inferences based on the available data. When possible, use stats/data backed by the document.
     Your job has one part:
     1) Answer the user's question based *only* on the provided Document Text
