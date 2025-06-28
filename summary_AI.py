@@ -1,4 +1,3 @@
-import os
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_community.document_loaders import BSHTMLLoader # BeautifulSoup HTML Loader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -9,6 +8,7 @@ from langchain_community.document_loaders import BSHTMLLoader # <--- HTML LOADER
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
+import streamlit as st
 
 import streamlit as st
 
@@ -20,7 +20,7 @@ LANGCHAIN_ENDPOINT = 'https://api.smith.langchain.com'
 GOOGLE_API_KEY = st.secrets["GOOGLE_GEMNI_API_KEY"]
 
 #Testing Source file
-HTML_FILE_PATH = 'Source_Material/Example_game.html'
+HTML_FILE_PATH = 'Example_game.html'
 
 #Testing on LLM
 GENERATION_MODEL_NAME = "gemini-2.5-flash-preview-05-20"
