@@ -18,7 +18,7 @@ os.environ['LANGCHAIN_TRACING_V2'] = 'true'
 os.environ['LANGCHAIN_ENDPOINT'] = 'https://api.smith.langchain.com'
 #os.environ['LANGCHAIN_API_KEY'] = os.environ.get('LANGCHAIN_API_KEY')
 
-os.environ["GOOGLE_API_KEY"] = os.environ.get('GOOGLE_GEMNI_API_KEY')
+GOOGLE_API_KEY = st.secrets["GOOGLE_GEMNI_API_KEY"]
 
 #Testing Source file
 HTML_FILE_PATH = 'Source_Material/Example_game.html'
@@ -33,6 +33,7 @@ LLM = ChatGoogleGenerativeAI(
     max_tokens=None,
     timeout=None,
     max_retries=2,
+    google_api_key = GOOGLE_API_KEY,
     # other params...
 )
 
@@ -42,6 +43,7 @@ code_LLM = ChatGoogleGenerativeAI(
     max_tokens=None,
     timeout=None,
     max_retries=2,
+    google_api_key = GOOGLE_API_KEY,
     # other params...
 )
 
