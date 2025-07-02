@@ -11,16 +11,24 @@ from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 import re
 import matplotlib.pyplot as plt
 import matplotlib
-import streamlit as st
+from langfuse.langchain import CallbackHandler
+from langfuse import Langfuse
 
 import streamlit as st
 
+handler = CallbackHandler()
 #API/LLM/environment definitions
 LANGCHAIN_TRACING_V2 = 'true'
 LANGCHAIN_ENDPOINT = 'https://api.smith.langchain.com'
 #LANGCHAIN_API_KEY = st.secrets["LANGCHAIN_API_KEY"]
 
 GOOGLE_API_KEY = st.secrets["GOOGLE_GEMNI_API_KEY"]
+
+langfuse = Langfuse(
+    public_key=st.secrets["LANGFUSE_PUPLIC_KEY"],
+    secret_key=st.secrets["LANGFUSE_PRIVATE_KEY"],
+    host="https://cloud.langfuse.com"
+)
 
 #Testing Source file
 HTML_FILE_PATH = 'Example_game.html'
@@ -193,9 +201,23 @@ def html_extraction(HTML_FILE_PATH=HTML_FILE_PATH):
     
 def ask_intelligent_engineer(user_question, raw_html_content, LLM=LLM, code_LLM=code_LLM, code=False):
     if code:
-        response = engineer_prompt_template(code_LLM, raw_html_content).invoke(user_question)
+        response = engineer_prompt_template(code_LLM, raw_html_content).invoke(user_question, config={
+                                                                                                    "callbacks": [handler],
+                                                                                                    "metadata": {
+                                                                                                        "langfuse_user_id": "user_123",
+                                                                                                        "langfuse_session_id": "session_456",
+                                                                                                        "langfuse_tags": ["langchain"]
+                                                                                                    }
+                                                                                                })
     else:
-        response = BA_prompt_template(LLM, raw_html_content).invoke(user_question)
+        response = BA_prompt_template(LLM, raw_html_content).invoke(user_question, config={
+                                                                                            "callbacks": [handler],
+                                                                                            "metadata": {
+                                                                                                "langfuse_user_id": "user_123",
+                                                                                                "langfuse_session_id": "session_456",
+                                                                                                "langfuse_tags": ["langchain"]
+                                                                                            }
+                                                                                        })
     
     return response
     
