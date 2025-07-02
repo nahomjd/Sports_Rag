@@ -15,24 +15,16 @@ from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 
-from summary_AI import html_extraction, ask_intelligent_assistant, summarize_html_with_langchain_map_reduce
+from summary_AI import html_extraction, html_file_extraction, ask_intelligent_assistant, summarize_html_with_langchain_map_reduce
 from engineer_AI import run_visualization
 
 
 raw_html_content, extracted_text_content = html_extraction()
-
+uploaded_file = None
 st.title('Your sports data assistant')
 #st.write(summarize_html_with_langchain_map_reduce())
 
-prompt = st.chat_input('How can I help you today')
-if prompt:
-    st.write(ask_intelligent_assistant(prompt, extracted_text_content, raw_html_content))
-    fig, error = run_visualization(prompt,raw_html_content)
-    if error:
-        st.write(error)
-    print(fig)
-    st.pyplot(fig[0])
-    
+prompt = st.chat_input('How can I help you today')    
 
 #Chat History
 if 'messages' not in st.session_state:
@@ -49,6 +41,24 @@ uploaded_files = st.sidebar.file_uploader(
 )
 for uploaded_file in uploaded_files:
     bytes_data = uploaded_file.read()
-    st.write("filename:", uploaded_file.name)
-    st.write(bytes_data)
+    file_type = uploaded_file.name.split('.')[-1]
     
+if prompt:
+    if uploaded_file is None:
+        st.write(ask_intelligent_assistant(prompt, extracted_text_content, raw_html_content))
+        fig, error = run_visualization(prompt,raw_html_content)
+        if error:
+            st.write(error)
+        print(fig)
+        st.pyplot(fig[0])
+    else:
+        if file_type == 'html':
+            extracted_text_content = html_file_extraction(bytes_data)
+            
+            st.write(ask_intelligent_assistant(prompt, extracted_text_content, bytes_data))
+            fig, error = run_visualization(prompt,bytes_data)
+        if error:
+            st.write(error)
+        print(fig)
+        st.pyplot(fig[0])
+        

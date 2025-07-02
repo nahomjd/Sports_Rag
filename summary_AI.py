@@ -8,9 +8,14 @@ from langchain_community.document_loaders import BSHTMLLoader # <--- HTML LOADER
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
-import streamlit as st
+from langfuse.langchain import CallbackHandler
+from langfuse import Langfuse
+
+from bs4 import BeautifulSoup
 
 import streamlit as st
+
+handler = CallbackHandler()
 
 #API/LLM/environment definitions
 LANGCHAIN_TRACING_V2 = 'true'
@@ -18,6 +23,12 @@ LANGCHAIN_ENDPOINT = 'https://api.smith.langchain.com'
 #LANGCHAIN_API_KEY = st.secrets["LANGCHAIN_API_KEY"]
 
 GOOGLE_API_KEY = st.secrets["GOOGLE_GEMNI_API_KEY"]
+
+langfuse = Langfuse(
+    public_key=st.secrets["LANGFUSE_PUPLIC_KEY"],
+    secret_key=st.secrets["LANGFUSE_PRIVATE_KEY"],
+    host="https://cloud.langfuse.com"
+)
 
 #Testing Source file
 HTML_FILE_PATH = 'Example_game.html'
@@ -52,7 +63,13 @@ def summarize_html_with_langchain_stuff(file_path=HTML_FILE_PATH, llm_model=LLM)
 
     chain = load_summarize_chain(llm_model, chain_type="stuff", verbose=False)
     try:
-        summary_output = chain.invoke(documents)
+        summary_output = chain.invoke(documents, config={"callbacks": [handler],
+                                                        "metadata": {
+                                                            "langfuse_user_id": "user_123",
+                                                            "langfuse_session_id": "session_456",
+                                                            "langfuse_tags": ["langchain"]
+                                                        }
+                                                    })
         return summary_output['output_text']
     except Exception as e:
         return f"Error during LangChain 'stuff' summarization: {e}"
@@ -86,7 +103,14 @@ def summarize_html_with_langchain_map_reduce(file_path=HTML_FILE_PATH, llm_model
 
     chain = load_summarize_chain(llm_model, chain_type="map_reduce", verbose=False)
     try:
-        summary_output = chain.invoke(split_docs)
+        summary_output = chain.invoke(split_docs, config={
+                                                        "callbacks": [handler],
+                                                        "metadata": {
+                                                            "langfuse_user_id": "user_123",
+                                                            "langfuse_session_id": "session_456",
+                                                            "langfuse_tags": ["langchain"]
+                                                        }
+                                                    })
         return summary_output['output_text']
     except Exception as e:
         return f"Error during LangChain 'map_reduce' summarization: {e}"
@@ -99,7 +123,6 @@ def html_extraction(HTML_FILE_PATH=HTML_FILE_PATH):
         with open(HTML_FILE_PATH, 'r', encoding='utf-8') as f:
             raw_html_content = f.read()
 
-        from bs4 import BeautifulSoup
         soup = BeautifulSoup(raw_html_content, 'html.parser')
         for unwanted_tag in soup(["script", "style", "nav", "footer", "aside"]): # Customize as needed
             unwanted_tag.decompose()
@@ -108,6 +131,14 @@ def html_extraction(HTML_FILE_PATH=HTML_FILE_PATH):
         print(f"Error processing HTML: {e}")
     return raw_html_content, extracted_text_content
     
+def html_file_extraction(html_string):
+    soup = BeautifulSoup(html_string, 'html.parser')
+    for unwanted_tag in soup(["script", "style", "nav", "footer", "aside"]): # Customize as needed
+        unwanted_tag.decompose()
+    extracted_text_content = soup.get_text(separator='\n', strip=True)
+    
+    return extracted_text_content
+
 class QueryType(JsonOutputParser):
     def get_format_instructions(self) -> str:
         return 'Return a JSON object with a single key "query_type" and one of the following values: "content_summary", "content_qa", "structure_code", "other".'
@@ -259,7 +290,14 @@ def ask_intelligent_assistant(user_question, extracted_text_content, raw_html_co
     # Step 1: Route the question
     print("   Routing question...")
     try:
-        route_result = router(LLM).invoke({"question": user_question})
+        route_result = router(LLM).invoke({"question": user_question}, config={
+                                                                            "callbacks": [handler],
+                                                                            "metadata": {
+                                                                                "langfuse_user_id": "user_123",
+                                                                                "langfuse_session_id": "session_456",
+                                                                                "langfuse_tags": ["langchain"]
+                                                                            }
+                                                                        })
         query_type = route_result.get("query_type")
         print(f"   Determined query type: {query_type}")
     except Exception as e:
@@ -272,24 +310,52 @@ def ask_intelligent_assistant(user_question, extracted_text_content, raw_html_co
         print("   Processing as content question...")
         # Check if extracted_text_content + question + prompt is too long for context
         # (Add context window check here if necessary for this specific chain's input)
-        response = content_qa_prompt_template(LLM, extracted_text_content, raw_html_content).invoke(user_question)
+        response = content_qa_prompt_template(LLM, extracted_text_content, raw_html_content).invoke(user_question, config={
+                                                                                                                            "callbacks": [handler],
+                                                                                                                            "metadata": {
+                                                                                                                                "langfuse_user_id": "user_123",
+                                                                                                                                "langfuse_session_id": "session_456",
+                                                                                                                                "langfuse_tags": ["langchain"]
+                                                                                                                            }
+                                                                                                                        })
     elif query_type == "file_structure":
         print("   Processing as structure/code question...")
         # Check if raw_html_content + question + prompt is too long for context
         # (Add context window check here; raw HTML can be very large)
-        response = file_structure_template(LLM, extracted_text_content, raw_html_content).invoke(user_question)
+        response = file_structure_template(LLM, extracted_text_content, raw_html_content).invoke(user_question, config={
+                                                                                                                        "callbacks": [handler],
+                                                                                                                        "metadata": {
+                                                                                                                            "langfuse_user_id": "user_123",
+                                                                                                                            "langfuse_session_id": "session_456",
+                                                                                                                            "langfuse_tags": ["langchain"]
+                                                                                                                        }
+                                                                                                                    })
     elif query_type == "code_generation":
         print("   Processing as structure/code question...")
         # Check if raw_html_content + question + prompt is too long for context
         # (Add context window check here; raw HTML can be very large)
-        response = code_generation_template(LLM, extracted_text_content, raw_html_content).invoke(user_question)
+        response = code_generation_template(LLM, extracted_text_content, raw_html_content).invoke(user_question, config={
+                                                                                                                        "callbacks": [handler],
+                                                                                                                        "metadata": {
+                                                                                                                            "langfuse_user_id": "user_123",
+                                                                                                                            "langfuse_session_id": "session_456",
+                                                                                                                            "langfuse_tags": ["langchain"]
+                                                                                                                        }
+                                                                                                                    })
     else: # "other" or fallback
         print("   Processing as 'other' or fallback...")
         # For "other", you might have a more general prompt or ask for clarification
         # For simplicity, let's try a general prompt using extracted text
         general_prompt_text = f"Please try to answer the following question based on the document's content: {user_question}\n\nDocument Text:\n{extracted_text_content}"
         try:
-            response = LLM.invoke(general_prompt_text).content
+            response = LLM.invoke(general_prompt_text, config={
+                                                                "callbacks": [handler],
+                                                                "metadata": {
+                                                                    "langfuse_user_id": "user_123",
+                                                                    "langfuse_session_id": "session_456",
+                                                                    "langfuse_tags": ["langchain"]
+                                                                }
+                                                            }).content
         except Exception as e:
             response = f"Sorry, I encountered an error trying to process that: {e}"
 
