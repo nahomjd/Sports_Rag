@@ -8,3 +8,4 @@ langchain_core
 beautifulsoup4
 lxml
 html5lib
+langchain-text-splitters
