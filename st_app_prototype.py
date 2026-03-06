@@ -6,7 +6,7 @@ import requests
 #langchain imports
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_community.document_loaders import BSHTMLLoader # BeautifulSoup HTML Loader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 from langchain.chains.summarize import load_summarize_chain
