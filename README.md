@@ -53,7 +53,3 @@ This project is commonly described as retrieval-augmented generation, but as imp
 - Sandbox the `exec()` call in `run_code_and_collect_figures` more strictly (currently runs LLM-generated code with `__builtins__` available)
 - Add automated tests / a small evaluation set (e.g., comparing generated summaries or chart data against known box-score values)
 - Consolidate `summary_AI.py` and `engineer_AI.py`, which currently duplicate several imports, prompt-chain patterns, and the `html_extraction` function
-
-## Example output
-
-*(Add a screenshot or short GIF here of a sample question, answer, and generated chart — most useful thing to include since the current dependency versions need updating before the app runs end-to-end.)*
